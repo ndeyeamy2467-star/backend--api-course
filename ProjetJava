@@ -1,0 +1,104 @@
+import java.util.Scanner;
+
+public class SimulTamagotchis {
+
+    public static void main(String[] args) {
+
+        Scanner clavier = new Scanner(System.in);
+
+        // Demander le nombre de Tamagotchis
+        System.out.print("Combien de Tamagotchis voulez-vous ? ");
+        int n = clavier.nextInt();
+        clavier.nextLine();
+
+        if (n <= 0) {
+            System.out.println("Nombre invalide !");
+            clavier.close();
+            return;
+        }
+
+        Tamagotchi[] animaux = new Tamagotchi[n];
+        boolean[] termines = new boolean[n];
+
+        // Creer les Tamagotchis
+        for (int i = 0; i < n; i++) {
+
+            System.out.print("Quel nom pour le nouveau tamagotchi : ");
+            String nom = clavier.nextLine();
+
+            animaux[i] = new Tamagotchi(nom);
+        }
+
+        int cycle = 1;
+        boolean perdu = false;
+        int nombreTermines = 0;
+
+        // Boucle principale du jeu
+        while (nombreTermines < n && !perdu) {
+
+            System.out.println("\n-------Cycle no " + cycle + " -------");
+
+            // Faire vivre tous les Tamagotchis
+            for (int i = 0; i < n; i++) {
+
+                if (!termines[i]) {
+
+                    boolean vivant = animaux[i].vivre();
+
+                    if (!vivant) {
+                        perdu = true;
+                    } else if (animaux[i].estTermine()) {
+                        termines[i] = true;
+                        nombreTermines++;
+                    }
+                }
+            }
+
+            if (perdu) {
+                break;
+            }
+
+            // Verifier si tout le monde a gagne
+            if (nombreTermines == n) {
+                break;
+            }
+
+            // Afficher les Tamagotchis encore en jeu
+            for (int i = 0; i < n; i++) {
+
+                if (!termines[i]) {
+                    System.out.print("(" + i + ") "
+                            + animaux[i].getNom() + "   ");
+                }
+            }
+
+            System.out.println();
+
+            // Demander quel Tamagotchi nourrir
+            int choix;
+
+            do {
+                System.out.print("Nourrir quel tamagotchi ? ");
+                choix = clavier.nextInt();
+
+                if (choix < 0 || choix >= n || termines[choix]) {
+                    System.out.println("Choix invalide !");
+                }
+
+            } while (choix < 0 || choix >= n || termines[choix]);
+
+            animaux[choix].manger();
+
+            cycle++;
+        }
+
+        // Afficher le resultat final
+        if (perdu) {
+            System.out.println("\nPERDU !!");
+        } else {
+            System.out.println("\nBRAVO !! TOUS LES TAMAGOTCHIS ONT GAGNE !");
+        }
+
+        clavier.close();
+    }
+}
